@@ -8,9 +8,11 @@ public class Game : MonoBehaviour
     [SerializeField] private GameObject selecter;
     [SerializeField] private GameObject Yellow;
     [SerializeField] private GameObject Red;
+    [SerializeField] private GameObject text;
     private int[][] grid;
     public int player = 1;
     private bool turn = false;
+    private bool win = false;
     private int turnCount = 0;
 
     private void Start()
@@ -20,6 +22,11 @@ public class Game : MonoBehaviour
 
     private void Update()
     {
+        if (win)
+        {
+            text.SetActive(true);
+            return;
+        }
         while (!turn)
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -65,11 +72,7 @@ public class Game : MonoBehaviour
                 {
                     Instantiate(Red, new Vector3(col, 5-i, 0), Quaternion.Euler(90,0,0));
                 }
-                if (isWinning(i, col))
-                {
-                    Debug.Log(player);
-                }
-
+                win = isWinning(i, col);
                 return true;
             }
         }
@@ -91,28 +94,31 @@ public class Game : MonoBehaviour
                 }
             }
         }
-
         c = 0;
-
-        for (int i = x; i < Mathf.Min(6, x + 3); i++)
+        for (int i = 0; i < 7; i++)
         {
             if (grid[y][i] == player)
             {
                 c += 1;
                 if (c == 4)
                 {
+                    Debug.Log(player + "a gagné");
                     return true;
                 }
             }
+            else
+            {
+                c = 0;
+            }
         }
-
         c = 0;
-
         return false;
     }
 
     public void restart()
     {
+        text.SetActive(false);
+        win = false;
         CreateGrid();
         GameObject[] tokens = GameObject.FindGameObjectsWithTag("token");
         foreach(GameObject token in tokens)
